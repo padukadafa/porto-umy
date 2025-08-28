@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Star, ChevronDown, ChevronUp, CheckCircle, XCircle, Plus, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Star, ChevronDown, ChevronUp, CheckCircle, XCircle, Plus, X, Loader2, Code, Palette, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 const AddProjectPage: React.FC = () => {
@@ -27,6 +27,7 @@ const AddProjectPage: React.FC = () => {
     github: '',
     demo: '',
     rating: 5,
+    icon: 'code',
     duration: '',
     team: '',
     status: 'Completed',
@@ -326,7 +327,7 @@ const AddProjectPage: React.FC = () => {
               <SectionHeader title="Basic Information" section="basic" isRequired />
               {expandedSections.basic && (
                 <div className="space-y-6 mt-6">
-                  <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="grid md:grid-cols-3 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Project Title <span className="text-red-500">*</span>
@@ -368,6 +369,32 @@ const AddProjectPage: React.FC = () => {
                         <option value="Machine Learning">Machine Learning</option>
                         <option value="Other">Other</option>
                       </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Project Icon <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        name="icon"
+                        value={formData.icon}
+                        onChange={handleInputChange}
+                        required
+                        disabled={isLoading}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                      >
+                        <option value="code">💻 Code</option>
+                        <option value="palette">🎨 Design</option>
+                        <option value="star">⭐ Star</option>
+                        <option value="zap">⚡ Lightning</option>
+                      </select>
+                      <div className="mt-2 flex gap-2">
+                        {formData.icon === 'code' && <Code className="w-5 h-5 text-blue-500" />}
+                        {formData.icon === 'palette' && <Palette className="w-5 h-5 text-purple-500" />}
+                        {formData.icon === 'star' && <Star className="w-5 h-5 text-yellow-500" />}
+                        {formData.icon === 'zap' && <Zap className="w-5 h-5 text-orange-500" />}
+                        <span className="text-sm text-gray-600">Preview</span>
+                      </div>
                     </div>
                   </div>
 

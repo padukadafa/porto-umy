@@ -4,13 +4,53 @@ import Link from 'next/link';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import useSWR from 'swr';
 import { ProjectCard } from '@/components/landing/ProjectCard';
-import { projects } from '@/data/projects';
+import { Project } from '@/types/project';
+import { Code, Palette, Star, Zap } from 'lucide-react';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+// Icon mapping for database icons
+const iconMap: { [key: string]: React.ReactNode } = {
+  'code': <Code className="w-5 h-5 text-white" />,
+  'palette': <Palette className="w-5 h-5 text-white" />,
+  'star': <Star className="w-5 h-5 text-white" />,
+  'zap': <Zap className="w-5 h-5 text-white" />,
+  'default': <Code className="w-5 h-5 text-white" />
+};
+
+// Transform database project to Project interface
+const transformProject = (dbProject: any): Project => {
+  return {
+    id: dbProject.id.toString(),
+    title: dbProject.title,
+    category: dbProject.category,
+    description: dbProject.description,
+    fullDescription: dbProject.fullDescription,
+    technologies: dbProject.technologies || [],
+    images: dbProject.images || [],
+    github: dbProject.github,
+    demo: dbProject.demo,
+    rating: Math.round(dbProject.rating),
+    icon: iconMap[dbProject.icon] || iconMap['default'],
+    duration: dbProject.duration,
+    team: dbProject.team,
+    status: dbProject.status,
+    challenges: dbProject.challenges || [],
+    solutions: dbProject.solutions || [],
+    features: dbProject.features || [],
+    objectives: dbProject.objectives || [],
+    results: dbProject.results || [],
+    testimonial: dbProject.testimonial ? {
+      text: dbProject.testimonial.text,
+      author: dbProject.testimonial.author,
+      role: dbProject.testimonial.role
+    } : undefined
+  };
+};
+
 const ProjectsDashboardPage: React.FC = () => {
-  const { data: apiProjects, mutate } = useSWR('/api/projects', fetcher);
-  const allProjects = [...projects, ...(apiProjects || [])];
+  const { data: apiProjects, mutate, error } = useSWR('/api/projects', fetcher);
+  const allProjects = apiProjects ? apiProjects.map(transformProject) : [];
 
   const handleDelete = async (projectId: string) => {
     if (confirm('Are you sure you want to delete this project?')) {
@@ -52,7 +92,7 @@ const ProjectsDashboardPage: React.FC = () => {
         <div className="pb-20">
           {allProjects.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {allProjects.map((project, index) => (
+              {allProjects.map((project: Project, index: number) => (
                 <div key={project.id || index} className="relative group">
                   <ProjectCard project={project} index={index} />
 
@@ -103,19 +143,19 @@ const ProjectsDashboardPage: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-600 mb-2">
-                  {allProjects.filter(p => p.status === 'Completed').length}
+                  {allProjects.filter((p: Project) => p.status === 'Completed').length}
                 </div>
                 <p className="text-gray-600">Completed</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-600 mb-2">
-                  {allProjects.filter(p => p.status === 'In Progress').length}
+                  {allProjects.filter((p: Project) => p.status === 'In Progress').length}
                 </div>
                 <p className="text-gray-600">In Progress</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-orange-600 mb-2">
-                  {allProjects.filter(p => p.github).length}
+                  {allProjects.filter((p: Project) => p.github).length}
                 </div>
                 <p className="text-gray-600">With GitHub</p>
               </div>
