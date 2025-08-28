@@ -1,0 +1,44 @@
+// Prisma schema for portfolio dashboard
+// Models: Project, SocialMedia
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id              Int      @id @default(autoincrement())
+  title           String
+  category        String
+  description     String
+  fullDescription String
+  technologies    String[] // Array of technology names
+  images          String[] // Array of image URLs
+  github          String?
+  demo            String?
+  rating          Float    @default(0)
+  icon            String   // Store icon as string (emoji or symbol)
+  duration        String
+  team            String
+  status          String
+  challenges      String[] // Array of challenge descriptions
+  solutions       String[] // Array of solution descriptions
+  features        String[] // Array of feature descriptions
+  objectives      String[] // Array of objective descriptions
+  results         String[] // Array of result descriptions
+  testimonial     Json?    // Store testimonial as JSON object
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SocialMedia {
+  id    Int    @id @default(autoincrement())
+  name  String
+  url   String
+  icon  String
+}
