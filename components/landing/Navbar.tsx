@@ -14,7 +14,7 @@ import {
   Settings
 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface NavbarProps {
   activeSection?: string;
@@ -25,22 +25,45 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const router = useRouter();
-  // Navigation items
+  const pathname = usePathname();
+
+  // Navigation items with route mapping
   const navItems = [
-    { id: 'hero', label: 'Home', icon: <Home className="w-4 h-4" /> },
-    { id: 'about', label: 'About', icon: <User className="w-4 h-4" /> },
-    { id: 'projects', label: 'Projects', icon: <Briefcase className="w-4 h-4" /> },
-    { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" /> },
-    { id: 'contact', label: 'Contact', icon: <Mail className="w-4 h-4" /> },
+    { id: 'hero', label: 'Home', icon: <Home className="w-4 h-4" />, route: '/' },
+    { id: 'about', label: 'About', icon: <User className="w-4 h-4" />, route: '/about' },
+    { id: 'projects', label: 'Projects', icon: <Briefcase className="w-4 h-4" />, route: '/projects' },
+    { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" />, route: '/#skills' },
+    { id: 'contact', label: 'Contact', icon: <Mail className="w-4 h-4" />, route: '/#contact' },
   ];
+
+  // Determine active navigation item based on current pathname
+  const getActiveNavItem = () => {
+    if (pathname === '/') {
+      // On home page, use scroll-based active section
+      return activeSection;
+    } else {
+      // On other pages, match the route
+      const activeItem = navItems.find(item => item.route === pathname);
+      return activeItem ? activeItem.id : 'hero';
+    }
+  };
+
+  const currentActiveItem = getActiveNavItem();
 
   // Handle scroll effect
   useEffect(() => {
     setIsMounted(true);
 
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 50);
+      
+      // Calculate scroll progress
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollHeight > 0 ? (scrollY / scrollHeight) * 100 : 0;
+      setScrollProgress(Math.min(100, progress));
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -48,23 +71,30 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
   }, []);
 
   // Handle navigation click
-  const handleNavClick = (sectionId: string) => {
+  const handleNavClick = (item: typeof navItems[0]) => {
     setIsOpen(false);
 
-    if (onSectionChange) {
-      onSectionChange(sectionId);
+    if (onSectionChange && pathname === '/') {
+      // On home page, use scroll-based navigation
+      onSectionChange(item.id);
     } else {
-      if (sectionId === "about") {
-        router.push("/about");
-      } else if (sectionId === "projects") {
-        router.push("/projects");
-      } else if (sectionId === "contact") {
-        router.push("/#contact");
-      } else {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+      // Navigate to the route
+      if (item.route.startsWith('/#')) {
+        // Handle anchor links
+        const [path, hash] = item.route.split('#');
+        if (path === '/' && pathname === '/') {
+          // Already on home page, just scroll to section
+          const element = document.getElementById(hash);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        } else {
+          // Navigate to home page with hash
+          router.push(item.route);
         }
+      } else {
+        // Navigate to other pages
+        router.push(item.route);
       }
     }
   };
@@ -117,9 +147,9 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => handleNavClick(item.id)}
+                  onClick={() => handleNavClick(item)}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 ${
-                    activeSection === item.id
+                    currentActiveItem === item.id
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
                       : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
                   }`}
@@ -184,9 +214,9 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => handleNavClick(item.id)}
+                  onClick={() => handleNavClick(item)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                    activeSection === item.id
+                    currentActiveItem === item.id
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
                       : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
                   }`}
@@ -238,9 +268,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
       <div className="fixed top-0 left-0 w-full h-1 bg-gray-200/50 z-40">
         <div 
           className="h-full bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-300"
-          style={{ 
-            width: `${Math.min(100, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100)}%` 
-          }}
+          style={{ width: `${scrollProgress}%` }}
         />
       </div>
     </>
