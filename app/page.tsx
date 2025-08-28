@@ -5,7 +5,9 @@ import { SplineScene } from '@/components/SplineScene';
 import SkillSection from '@/components/landing/SkillSection';
 import ContactSection from '@/components/landing/ContactSection';
 import { ProjectCard } from '@/components/landing/ProjectCard';
-import { projects } from '@/data/projects';
+import useSWR from 'swr';
+import { Project } from '@/types/project';
+import { Code, Palette, Star, Zap } from 'lucide-react';
 
 
 interface SectionProps {
@@ -46,6 +48,52 @@ const Section: React.FC<SectionProps> = ({
 const ModernPortfolio: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('hero');
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+
+  // Fetch projects from API
+  const fetcher = (url: string) => fetch(url).then(res => res.json());
+  const { data: apiProjects, error } = useSWR('/api/projects', fetcher);
+
+  // Icon mapping for database icons
+  const iconMap: { [key: string]: React.ReactNode } = {
+    'code': <Code className="w-5 h-5 text-white" />,
+    'palette': <Palette className="w-5 h-5 text-white" />,
+    'star': <Star className="w-5 h-5 text-white" />,
+    'zap': <Zap className="w-5 h-5 text-white" />,
+    'default': <Code className="w-5 h-5 text-white" />
+  };
+
+  // Transform database project to Project interface
+  const transformProject = (dbProject: any): Project => {
+    return {
+      id: dbProject.id.toString(),
+      title: dbProject.title,
+      category: dbProject.category,
+      description: dbProject.description,
+      fullDescription: dbProject.fullDescription,
+      technologies: dbProject.technologies || [],
+      images: dbProject.images || [],
+      github: dbProject.github,
+      demo: dbProject.demo,
+      rating: Math.round(dbProject.rating),
+      icon: iconMap[dbProject.icon] || iconMap['default'],
+      duration: dbProject.duration,
+      team: dbProject.team,
+      status: dbProject.status,
+      challenges: dbProject.challenges || [],
+      solutions: dbProject.solutions || [],
+      features: dbProject.features || [],
+      objectives: dbProject.objectives || [],
+      results: dbProject.results || [],
+      testimonial: dbProject.testimonial ? {
+        text: dbProject.testimonial.text,
+        author: dbProject.testimonial.author,
+        role: dbProject.testimonial.role
+      } : undefined
+    };
+  };
+
+  // Get published projects only
+  const allProjects = apiProjects ? apiProjects.filter((p: any) => p.published).map(transformProject) : [];
 
   useEffect(() => {
     setIsLoaded(true);
@@ -130,10 +178,20 @@ const ModernPortfolio: React.FC = () => {
       {/* Projects Section */}
       <Section id="projects" title="Featured Projects" kicker="My Work" className="bg-white/30 backdrop-blur-sm">
         <div className="grid md:grid-cols-2 gap-8">
-          {projects.map((project, index) => (
-            <ProjectCard key={index} project={project} index={index} />
+          {allProjects.map((project: Project, index: number) => (
+            <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
+        {allProjects.length === 0 && !error && (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Loading projects...</p>
+          </div>
+        )}
+        {error && (
+          <div className="text-center py-12">
+            <p className="text-red-600">Failed to load projects. Please try again later.</p>
+          </div>
+        )}
       </Section>
 
       <SkillSection />

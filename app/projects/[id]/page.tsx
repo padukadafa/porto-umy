@@ -1,16 +1,21 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import {
-  Star, Users,
-  Code, Zap,
-  Clock,
-  Target,
-  Lightbulb,
-  CheckCircle,
-  PlayCircle
+    Star, Users,
+    Code, Zap,
+    Clock,
+    Target,
+    Lightbulb,
+    CheckCircle,
+    PlayCircle,
+    ArrowLeft,
+    Github,
+    ExternalLink
 } from 'lucide-react';
 import { Project } from '@/types/project';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import useSWR from 'swr';
+import { Code as CodeIcon, Palette, Star as StarIcon } from 'lucide-react';
 
 // Types
 
@@ -122,87 +127,122 @@ const InfoCard: React.FC<InfoCardProps> = ({ title, items, icon, color }) => (
 const ProjectDetailPage: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
+  const params = useParams();
+  const projectId = params.id as string;
+
+  // Fetch project from API
+  const fetcher = (url: string) => fetch(url).then(res => res.json());
+  const { data: dbProject, error, isLoading } = useSWR(
+    projectId ? `/api/projects/${projectId}` : null,
+    fetcher
+  );
+
+  // Icon mapping for database icons
+  const iconMap: { [key: string]: React.ReactNode } = {
+    'code': <CodeIcon className="w-5 h-5 text-white" />,
+    'palette': <Palette className="w-5 h-5 text-white" />,
+    'star': <StarIcon className="w-5 h-5 text-white" />,
+    'zap': <Zap className="w-5 h-5 text-white" />,
+    'default': <CodeIcon className="w-5 h-5 text-white" />
+  };
+
+  // Transform database project to Project interface
+  const project: Project | null = dbProject ? {
+    id: dbProject.id.toString(),
+    title: dbProject.title,
+    category: dbProject.category,
+    description: dbProject.description,
+    fullDescription: dbProject.fullDescription,
+    technologies: dbProject.technologies || [],
+    images: dbProject.images || [],
+    github: dbProject.github,
+    demo: dbProject.demo,
+    rating: Math.round(dbProject.rating),
+    icon: iconMap[dbProject.icon] || iconMap['default'],
+    duration: dbProject.duration,
+    team: dbProject.team,
+    status: dbProject.status,
+    challenges: dbProject.challenges || [],
+    solutions: dbProject.solutions || [],
+    features: dbProject.features || [],
+    objectives: dbProject.objectives || [],
+    results: dbProject.results || [],
+    testimonial: dbProject.testimonial ? {
+      text: dbProject.testimonial.text,
+      author: dbProject.testimonial.author,
+      role: dbProject.testimonial.role
+    } : undefined
+  } : null;
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
-
-  const project: Project = {
-    id: "ecommerce-platform",
-    title: "E-Commerce Platform",
-    category: "Full Stack Web Application",
-    description: "A comprehensive e-commerce platform with modern UI, secure payment integration, admin dashboard, and real-time inventory management.",
-    fullDescription: "This project represents a complete end-to-end e-commerce solution built with modern web technologies. The platform features a responsive design, secure payment processing through Stripe, real-time inventory management, and a comprehensive admin dashboard. The application emphasizes performance, security, and user experience, incorporating advanced features like AI-powered product recommendations, multi-language support, and progressive web app capabilities.",
-    technologies: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "Stripe", "Tailwind CSS", "Redis", "Docker"],
-    images: [
-      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop"
-    ],
-    github: "https://github.com/username/ecommerce-platform",
-    demo: "https://ecommerce-demo.vercel.app",
-    rating: 5,
-    icon: <Zap className="w-5 h-5 text-white" />,
-    duration: "4 months",
-    team: "Solo Developer",
-    status: "Completed",
-    challenges: [
-      "Implementing real-time inventory synchronization across multiple channels",
-      "Ensuring PCI DSS compliance for payment processing",
-      "Optimizing performance for large product catalogs",
-      "Creating a scalable architecture for future growth"
-    ],
-    solutions: [
-      "Built event-driven architecture using Redis for real-time updates",
-      "Integrated Stripe for secure, compliant payment processing",
-      "Implemented advanced caching strategies and database optimization",
-      "Designed microservices architecture with Docker containerization"
-    ],
-    features: [
-      "Responsive design optimized for all devices",
-      "Advanced product search with filters and sorting",
-      "Secure payment processing with Stripe integration",
-      "Real-time inventory management",
-      "Admin dashboard with analytics and reporting",
-      "Multi-language support (i18n)",
-      "Progressive Web App capabilities",
-      "AI-powered product recommendations"
-    ],
-    objectives: [
-      "Create a modern, user-friendly e-commerce experience",
-      "Ensure secure and reliable payment processing",
-      "Build a scalable platform for future growth",
-      "Implement best practices for SEO and performance"
-    ],
-    results: [
-      "98% lighthouse performance score achieved",
-      "Zero security vulnerabilities in production",
-      "50% faster page load times compared to legacy systems",
-      "Increased user engagement by 40%"
-    ],
-    testimonial: {
-      text: "The e-commerce platform exceeded our expectations. The clean design, fast performance, and robust features have significantly improved our online sales.",
-      author: "Sarah Johnson",
-      role: "Business Owner"
-    }
-  };
 
   const handleBack = () => {
     router.replace("/");
   };
 
   const handleGithubClick = () => {
-    if (project.github) {
+    if (project?.github) {
       window.open(project.github, '_blank');
     }
   };
 
   const handleDemoClick = () => {
-    if (project.demo) {
+    if (project?.demo) {
       window.open(project.demo, '_blank');
     }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <main className="relative min-h-screen bg-gradient-to-br from-gray-50 to-white text-gray-900 mt-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading project...</p>
+        </div>
+      </main>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <main className="relative min-h-screen bg-gradient-to-br from-gray-50 to-white text-gray-900 mt-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">❌</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Project Not Found</h1>
+          <p className="text-gray-600 mb-6">The project you're looking for doesn't exist or has been removed.</p>
+          <button 
+            onClick={handleBack}
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+          >
+            Back to Portfolio
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // Project not found
+  if (!project) {
+    return (
+      <main className="relative min-h-screen bg-gradient-to-br from-gray-50 to-white text-gray-900 mt-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🔍</div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Project Not Found</h1>
+          <p className="text-gray-600 mb-6">The project you're looking for doesn't exist.</p>
+          <button 
+            onClick={handleBack}
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+          >
+            Back to Portfolio
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="relative min-h-screen bg-gradient-to-br from-gray-50 to-white text-gray-900 mt-12">
@@ -214,7 +254,7 @@ const ProjectDetailPage: React.FC = () => {
       </div>
 
       {/* Header */}
-      {/* <header className="sticky top-20 z-40 bg-white/80 backdrop-blur-sm border-b border-white/20">
+      <header className="sticky top-20 z-40 bg-white/80 backdrop-blur-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <button 
@@ -246,7 +286,7 @@ const ProjectDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </header> */}
+      </header>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-12">
