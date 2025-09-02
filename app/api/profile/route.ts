@@ -1,15 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-// GET /api/profile - Get profile data
 export async function GET() {
   try {
-    // For now, we'll get the first profile or create a default one
-    // In a real app, you'd get the profile for the authenticated user
     let profile = await prisma.profile.findFirst();
 
     if (!profile) {
-      // Create a default profile if none exists
       profile = await prisma.profile.create({
         data: {
           name: '',
@@ -38,17 +34,13 @@ export async function GET() {
   }
 }
 
-// PUT /api/profile - Update profile data
 export async function PUT(req: Request) {
   try {
     const data = await req.json();
 
-    // For now, we'll update the first profile or create one if it doesn't exist
-    // In a real app, you'd update the profile for the authenticated user
     let profile = await prisma.profile.findFirst();
 
     if (profile) {
-      // Update existing profile
       profile = await prisma.profile.update({
         where: { id: profile.id },
         data: {
