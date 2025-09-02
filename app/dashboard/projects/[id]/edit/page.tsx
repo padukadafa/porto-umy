@@ -1,13 +1,45 @@
 "use client"
-import React, { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Save, Star, ChevronDown, ChevronUp, CheckCircle, XCircle, Plus, X, Loader2, Code, Palette, Zap } from 'lucide-react';
 import Link from 'next/link';
 
-const AddProjectPage: React.FC = () => {
+interface ProjectData {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  fullDescription: string;
+  technologies: string[];
+  images: string[];
+  github: string;
+  demo: string;
+  rating: number;
+  icon: string;
+  duration: string;
+  team: string;
+  status: string;
+  challenges: string[];
+  solutions: string[];
+  features: string[];
+  objectives: string[];
+  results: string[];
+  published: boolean;
+  testimonial: {
+    text: string;
+    author: string;
+    role: string;
+  };
+}
+
+const EditProjectPage: React.FC = () => {
   const router = useRouter();
+  const params = useParams();
+  const projectId = params.id as string;
+
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [isLoadingProject, setIsLoadingProject] = useState(true);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [expandedSections, setExpandedSections] = useState({
     basic: true,
@@ -17,13 +49,14 @@ const AddProjectPage: React.FC = () => {
     testimonial: false
   });
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProjectData>({
+    id: 0,
     title: '',
     category: '',
     description: '',
     fullDescription: '',
-    technologies: [] as string[],
-    images: [] as string[],
+    technologies: [],
+    images: [],
     github: '',
     demo: '',
     rating: 5,
@@ -31,11 +64,11 @@ const AddProjectPage: React.FC = () => {
     duration: '',
     team: '',
     status: 'Completed',
-    challenges: [] as string[],
-    solutions: [] as string[],
-    features: [] as string[],
-    objectives: [] as string[],
-    results: [] as string[],
+    challenges: [],
+    solutions: [],
+    features: [],
+    objectives: [],
+    results: [],
     published: false,
     testimonial: {
       text: '',
@@ -52,7 +85,40 @@ const AddProjectPage: React.FC = () => {
   const [newObjective, setNewObjective] = useState('');
   const [newResult, setNewResult] = useState('');
 
-  React.useEffect(() => {
+  // Load project data
+  useEffect(() => {
+    const loadProject = async () => {
+      if (!projectId) return;
+
+      try {
+        const response = await fetch(`/api/projects/${projectId}`);
+        if (response.ok) {
+          const projectData = await response.json();
+          // Convert null values to empty strings for controlled inputs
+          const sanitizedData = {
+            ...projectData,
+            github: projectData.github || '',
+            demo: projectData.demo || '',
+            duration: projectData.duration || '',
+            team: projectData.team || '',
+            testimonial: projectData.testimonial || { text: '', author: '', role: '' }
+          };
+          setFormData(sanitizedData);
+        } else {
+          setMessage({ type: 'error', text: 'Failed to load project data' });
+        }
+      } catch (error) {
+        console.error('Error loading project:', error);
+        setMessage({ type: 'error', text: 'Failed to load project data' });
+      } finally {
+        setIsLoadingProject(false);
+      }
+    };
+
+    loadProject();
+  }, [projectId]);
+
+  useEffect(() => {
     // Simulate initialization loading
     const timer = setTimeout(() => {
       setIsInitializing(false);
@@ -95,7 +161,7 @@ const AddProjectPage: React.FC = () => {
   };
 
   // Array management functions
-  const addItem = useCallback((field: keyof typeof formData, value: string, setter: (value: string) => void) => {
+  const addItem = useCallback((field: keyof ProjectData, value: string, setter: (value: string) => void) => {
     if (!value.trim()) return;
 
     const currentArray = formData[field] as string[];
@@ -108,7 +174,7 @@ const AddProjectPage: React.FC = () => {
     setter('');
   }, [formData]);
 
-  const removeItem = useCallback((field: keyof typeof formData, index: number) => {
+  const removeItem = useCallback((field: keyof ProjectData, index: number) => {
     const currentArray = formData[field] as string[];
     setFormData(prev => ({
       ...prev,
@@ -116,7 +182,7 @@ const AddProjectPage: React.FC = () => {
     }));
   }, []);
 
-  const handleKeyPress = useCallback((e: React.KeyboardEvent, field: keyof typeof formData, value: string, setter: (value: string) => void) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent, field: keyof ProjectData, value: string, setter: (value: string) => void) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       addItem(field, value, setter);
@@ -154,8 +220,8 @@ const AddProjectPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -163,16 +229,16 @@ const AddProjectPage: React.FC = () => {
       });
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Project created successfully!' });
+        setMessage({ type: 'success', text: 'Project updated successfully!' });
         setTimeout(() => {
           router.push('/dashboard/projects');
         }, 1500);
       } else {
         const errorData = await response.json();
-        setMessage({ type: 'error', text: errorData.error || 'Failed to create project' });
+        setMessage({ type: 'error', text: errorData.error || 'Failed to update project' });
       }
     } catch (error) {
-      console.error('Error creating project:', error);
+      console.error('Error updating project:', error);
       setMessage({ type: 'error', text: 'Network error. Please try again.' });
     } finally {
       setIsLoading(false);
@@ -198,7 +264,7 @@ const AddProjectPage: React.FC = () => {
 
   const ArrayInput: React.FC<{
     label: string;
-    field: keyof typeof formData;
+    field: keyof ProjectData;
     value: string;
     setter: (value: string) => void;
     placeholder: string;
@@ -253,12 +319,14 @@ const AddProjectPage: React.FC = () => {
     </div>
   ));
 
-  if (isInitializing) {
+  if (isInitializing || isLoadingProject) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-blue-500 mx-auto mb-4" />
-          <p className="text-gray-600 text-lg">Loading form...</p>
+          <p className="text-gray-600 text-lg">
+            {isLoadingProject ? 'Loading project...' : 'Loading form...'}
+          </p>
         </div>
       </main>
     );
@@ -267,7 +335,7 @@ const AddProjectPage: React.FC = () => {
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-green-300 to-blue-300 rounded-full blur-[120px] opacity-30 animate-pulse" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-orange-300 to-red-300 rounded-full blur-[120px] opacity-30 animate-pulse" />
         <div className="absolute top-1/3 right-0 w-96 h-96 bg-gradient-to-r from-purple-300 to-pink-300 rounded-full blur-[150px] opacity-30 animate-pulse" style={{animationDelay: '1s'}} />
       </div>
 
@@ -282,11 +350,11 @@ const AddProjectPage: React.FC = () => {
             Back to Projects
           </Link>
           <h1 className="text-3xl lg:text-4xl font-bold mb-2">
-            <span className="bg-gradient-to-r from-gray-900 via-green-800 to-blue-800 bg-clip-text text-transparent">
-              Add New Project
+            <span className="bg-gradient-to-r from-gray-900 via-orange-800 to-red-800 bg-clip-text text-transparent">
+              Edit Project
             </span>
           </h1>
-          <p className="text-gray-600">Create a comprehensive project entry for your portfolio</p>
+          <p className="text-gray-600">Update your project information and details</p>
         </div>
       </div>
 
@@ -318,16 +386,17 @@ const AddProjectPage: React.FC = () => {
               <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl">
                 <div className="text-center">
                   <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-3" />
-                  <p className="text-gray-700 font-medium">Creating project...</p>
+                  <p className="text-gray-700 font-medium">Updating project...</p>
                 </div>
               </div>
             )}
+
             {/* Basic Information */}
             <div className="p-8">
               <SectionHeader title="Basic Information" section="basic" isRequired />
               {expandedSections.basic && (
                 <div className="space-y-6 mt-6">
-                                    <div className="grid md:grid-cols-3 gap-6">
+                  <div className="grid md:grid-cols-3 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Project Title <span className="text-red-500">*</span>
@@ -716,14 +785,14 @@ const AddProjectPage: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Testimonial Text</label>
                     <textarea
-                      value={formData.testimonial.text}
+                      value={formData.testimonial?.text || ''}
                       onChange={(e) => handleTestimonialChange('text', e.target.value)}
                       rows={4}
                       disabled={isLoading}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors resize-none"
                       placeholder="What someone said about this project"
                     />
-                    <p className="text-sm text-gray-500 mt-1">{formData.testimonial.text.length}/500 characters</p>
+                    <p className="text-sm text-gray-500 mt-1">{(formData.testimonial?.text || '').length}/500 characters</p>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
@@ -731,7 +800,7 @@ const AddProjectPage: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">Author Name</label>
                       <input
                         type="text"
-                        value={formData.testimonial.author}
+                        value={formData.testimonial?.author || ''}
                         onChange={(e) => handleTestimonialChange('author', e.target.value)}
                         disabled={isLoading}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
@@ -743,7 +812,7 @@ const AddProjectPage: React.FC = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">Author Role</label>
                       <input
                         type="text"
-                        value={formData.testimonial.role}
+                        value={formData.testimonial?.role || ''}
                         onChange={(e) => handleTestimonialChange('role', e.target.value)}
                         disabled={isLoading}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
@@ -767,17 +836,17 @@ const AddProjectPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Creating...
+                      Updating...
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4 mr-2" />
-                      Create Project
+                      Update Project
                     </>
                   )}
                 </button>
@@ -790,4 +859,4 @@ const AddProjectPage: React.FC = () => {
   );
 };
 
-export default AddProjectPage;
+export default EditProjectPage;

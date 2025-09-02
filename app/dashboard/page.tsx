@@ -1,42 +1,33 @@
 "use client"
 import React from 'react';
 import Link from 'next/link';
-import { Plus, FolderOpen, Users, Settings } from 'lucide-react';
+import { Plus, FolderOpen, Settings } from 'lucide-react';
 import useSWR from 'swr';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const DashboardHome: React.FC = () => {
   const { data: projects } = useSWR('/api/projects', fetcher);
-  const { data: socials } = useSWR('/api/socials', fetcher);
   const projectCount = projects?.length || 0;
-  const socialCount = socials?.length || 0;
 
   const menuItems = [
     {
-      title: 'Add New Project',
-      description: 'Create a new project to showcase your work',
+      title: 'Tambah Proyek Baru',
+      description: 'Buat proyek baru untuk memamerkan karya Anda',
       icon: Plus,
       href: '/dashboard/projects/add',
       color: 'from-blue-500 to-purple-600'
     },
     {
-      title: 'Manage Projects',
-      description: 'View and edit your existing projects',
+      title: 'Kelola Proyek',
+      description: 'Lihat dan edit proyek yang ada',
       icon: FolderOpen,
       href: '/dashboard/projects',
       color: 'from-green-500 to-teal-600'
     },
     {
-      title: 'Social Media',
-      description: 'Manage your social media links',
-      icon: Users,
-      href: '/dashboard/socials',
-      color: 'from-orange-500 to-red-600'
-    },
-    {
-      title: 'Settings',
-      description: 'Configure your portfolio settings',
+      title: 'Pengaturan',
+      description: 'Konfigurasi pengaturan portofolio Anda',
       icon: Settings,
       href: '/dashboard/settings',
       color: 'from-gray-500 to-gray-700'
@@ -90,19 +81,15 @@ const DashboardHome: React.FC = () => {
         {/* Quick Stats */}
         <div className="pb-20">
           <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Overview</h2>
-            <div className="grid md:grid-cols-3 gap-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Ringkasan Cepat</h2>
+            <div className="grid md:grid-cols-2 gap-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-2">{projectCount}</div>
-                <p className="text-gray-600">Total Projects</p>
+                <p className="text-gray-600">Total Proyek</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-600 mb-2">{projects?.filter((p: any) => p.published).length || 0}</div>
-                <p className="text-gray-600">Published Projects</p>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 mb-2">{socialCount}</div>
-                <p className="text-gray-600">Social Links</p>
+                <p className="text-gray-600">Proyek yang Diterbitkan</p>
               </div>
             </div>
           </div>

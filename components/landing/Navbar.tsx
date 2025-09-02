@@ -1,20 +1,22 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import {
-  Menu,
-  X,
-  Home,
-  User,
-  Briefcase,
-  Code,
-  Mail,
-  Github,
-  Linkedin,
-  Download,
-  Settings
+    Menu,
+    X,
+    Home,
+    User,
+    Briefcase,
+    Code,
+    Mail,
+    Github,
+    Linkedin,
+    Download,
+    Settings,
+    LogIn
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 
 interface NavbarProps {
   activeSection?: string;
@@ -28,14 +30,15 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
   const [scrollProgress, setScrollProgress] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
 
   // Navigation items with route mapping
   const navItems = [
-    { id: 'hero', label: 'Home', icon: <Home className="w-4 h-4" />, route: '/' },
-    { id: 'about', label: 'About', icon: <User className="w-4 h-4" />, route: '/about' },
-    { id: 'projects', label: 'Projects', icon: <Briefcase className="w-4 h-4" />, route: '/projects' },
-    { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" />, route: '/#skills' },
-    { id: 'contact', label: 'Contact', icon: <Mail className="w-4 h-4" />, route: '/#contact' },
+    { id: 'hero', label: 'Beranda', icon: <Home className="w-4 h-4" />, route: '/' },
+    { id: 'about', label: 'Tentang', icon: <User className="w-4 h-4" />, route: '/about' },
+    { id: 'projects', label: 'Proyek', icon: <Briefcase className="w-4 h-4" />, route: '/projects' },
+    { id: 'skills', label: 'Keahlian', icon: <Code className="w-4 h-4" />, route: '/#skills' },
+    { id: 'contact', label: 'Kontak', icon: <Mail className="w-4 h-4" />, route: '/#contact' },
   ];
 
   // Determine active navigation item based on current pathname
@@ -162,13 +165,23 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
 
             {/* Desktop Actions */}
             <div className="hidden lg:flex items-center space-x-3">
-              <Link
-                href="/dashboard"
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
-              >
-                <Settings className="w-4 h-4" />
-                <span>Dashboard</span>
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  href="/dashboard"
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Dasbor</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Masuk</span>
+                </Link>
+              )}
               <button
                 onClick={() => handleSocialClick('github')}
                 className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
@@ -188,7 +201,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
                 className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
               >
                 <Download className="w-4 h-4" />
-                <span>Download CV</span>
+                <span>Unduh CV</span>
               </button>
             </div>
 
@@ -228,13 +241,23 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
               
               {/* Mobile Actions */}
               <div className="pt-4 border-t border-gray-200 space-y-3">
-                <Link
-                  href="/dashboard"
-                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span>Dashboard</span>
-                </Link>
+                {isAuthenticated ? (
+                  <Link
+                    href="/dashboard"
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span>Dasbor</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl font-medium"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>Masuk</span>
+                  </Link>
+                )}
                 <div className="flex space-x-3">
                   <button
                     onClick={() => handleSocialClick('github')}
@@ -256,7 +279,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
                   className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Download CV</span>
+                  <span>Unduh CV</span>
                 </button>
               </div>
             </div>

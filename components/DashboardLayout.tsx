@@ -3,17 +3,16 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Home,
-  FolderOpen,
-  Users,
-  Settings,
-  ArrowLeft,
-  Menu,
-  X,
-  Bell,
-  Search,
-  User
+    Home,
+    FolderOpen,
+    Settings,
+    ArrowLeft,
+    Menu,
+    X, Search,
+    User,
+    LogOut
 } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -22,6 +21,7 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const { logout, userEmail } = useAuth();
 
   const navigationItems = [
     {
@@ -35,12 +35,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       href: '/dashboard/projects',
       icon: FolderOpen,
       current: pathname.startsWith('/dashboard/projects')
-    },
-    {
-      name: 'Social Media',
-      href: '/dashboard/socials',
-      icon: Users,
-      current: pathname.startsWith('/dashboard/socials')
     },
     {
       name: 'Settings',
@@ -70,53 +64,42 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-colors group"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span className="font-medium hidden sm:block">Back to Portfolio</span>
+                <span className="font-medium hidden sm:block">Kembali ke Portofolio</span>
               </Link>
               <div className="h-6 w-px bg-gray-300" />
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">D</span>
                 </div>
-                <span className="font-bold text-gray-900 text-lg">Dashboard</span>
+                <span className="font-bold text-gray-900 text-lg">Dasbor</span>
               </div>
             </div>
 
-            {/* Center Section - Search (Desktop) */}
-            <div className="hidden md:flex flex-1 max-w-md mx-8">
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
-                />
-              </div>
-            </div>
 
-            {/* Right Section - Actions and Mobile Menu */}
             <div className="flex items-center space-x-3">
-              {/* Search Button (Mobile) */}
-              <button className="md:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                <Search className="w-5 h-5" />
-              </button>
+              
 
-              {/* Notifications */}
-              <button className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                <Bell className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
-
-              {/* User Menu */}
               <div className="relative">
                 <button className="flex items-center space-x-2 p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                     <User className="w-4 h-4 text-white" />
                   </div>
-                  <span className="hidden sm:block font-medium">Admin</span>
+                  <div className="hidden sm:flex flex-col items-start">
+                    <span className="font-medium text-sm">Admin</span>
+                    <span className="text-xs text-gray-500">{userEmail}</span>
+                  </div>
                 </button>
               </div>
 
-              {/* Mobile Menu Button */}
+              <button
+                onClick={logout}
+                className="flex items-center space-x-2 p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                title="Logout"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="hidden sm:block font-medium">Keluar</span>
+              </button>
+
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="md:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -136,7 +119,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder="Cari..."
                   className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 />
               </div>
@@ -156,6 +139,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                   <span className="font-medium">{item.name}</span>
                 </Link>
               ))}
+
+              {/* Mobile Logout */}
+              <button
+                onClick={() => {
+                  logout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300"
+              >
+                <LogOut className="w-5 h-5" />
+                <span className="font-medium">Keluar</span>
+              </button>
             </div>
           </div>
         )}

@@ -56,9 +56,9 @@ const ProjectsPage: React.FC = () => {
       objectives: dbProject.objectives || [],
       results: dbProject.results || [],
       testimonial: dbProject.testimonial ? {
-        text: dbProject.testimonial.text,
-        author: dbProject.testimonial.author,
-        role: dbProject.testimonial.role
+        text: dbProject.testimonial.text || '',
+        author: dbProject.testimonial.author || '',
+        role: dbProject.testimonial.role || ''
       } : undefined
     };
   };
@@ -109,11 +109,11 @@ const ProjectsPage: React.FC = () => {
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl lg:text-6xl font-bold mb-6">
             <span className="bg-gradient-to-r from-gray-900 via-purple-800 to-pink-800 bg-clip-text text-transparent">
-              My Projects
+              Proyek Saya
             </span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Explore my complete portfolio of projects, from web applications to creative designs.
+            Jelajahi portofolio lengkap proyek saya, dari aplikasi web hingga desain kreatif.
           </p>
 
           {/* Search and Filter */}
@@ -122,7 +122,7 @@ const ProjectsPage: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search projects, technologies, categories..."
+                placeholder="Cari proyek, teknologi, kategori..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 pr-10 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-400 focus:border-transparent outline-none bg-white/80 backdrop-blur-sm min-w-[300px]"
@@ -147,7 +147,7 @@ const ProjectsPage: React.FC = () => {
                       : 'bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white'
                   }`}
                 >
-                  {category === 'all' ? 'All Projects' : category.charAt(0).toUpperCase() + category.slice(1)}
+                  {category === 'all' ? 'Semua Proyek' : category.charAt(0).toUpperCase() + category.slice(1)}
                 </button>
               ))}
             </div>
@@ -157,13 +157,13 @@ const ProjectsPage: React.FC = () => {
           <div className="text-center mb-8">
             <p className="text-gray-600">
               {isLoading ? (
-                'Loading projects...'
+                'Memuat proyek...'
               ) : (
-                `Showing ${filteredProjects.length} of ${allProjects.length} projects`
+                `Menampilkan ${filteredProjects.length} dari ${allProjects.length} proyek`
               )}
               {debouncedSearchTerm && (
                 <span className="ml-2 text-purple-600 font-medium">
-                  (filtered by: "{debouncedSearchTerm}")
+                  (difilter berdasarkan: "{debouncedSearchTerm}")
                 </span>
               )}
             </p>
@@ -183,33 +183,33 @@ const ProjectsPage: React.FC = () => {
           ) : isLoading ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">⏳</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Loading projects...</h3>
-              <p className="text-gray-600">Please wait while we fetch your projects.</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Memuat proyek...</h3>
+              <p className="text-gray-600">Harap tunggu sementara kami mengambil proyek Anda.</p>
             </div>
           ) : error ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">❌</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Failed to load projects</h3>
-              <p className="text-gray-600">Please try again later or check your connection.</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Gagal memuat proyek</h3>
+              <p className="text-gray-600">Silakan coba lagi nanti atau periksa koneksi Anda.</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
-                Try Again
+                Coba Lagi
               </button>
             </div>
           ) : allProjects.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">�</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">No published projects yet</h3>
-              <p className="text-gray-600">Projects will appear here once they're published in the dashboard.</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Belum ada proyek yang dipublikasikan</h3>
+              <p className="text-gray-600">Proyek akan muncul di sini setelah dipublikasikan di dashboard.</p>
             </div>
           ) : (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">No projects match your search</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Tidak ada proyek yang cocok dengan pencarian Anda</h3>
               <p className="text-gray-600 mb-4">
-                Try adjusting your search terms or filter criteria.
+                Coba sesuaikan kata kunci pencarian atau kriteria filter.
               </p>
               {(searchTerm || filter !== 'all') && (
                 <button 
@@ -219,7 +219,7 @@ const ProjectsPage: React.FC = () => {
                   }}
                   className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                 >
-                  Clear Filters
+                  Hapus Filter
                 </button>
               )}
             </div>
@@ -231,7 +231,7 @@ const ProjectsPage: React.FC = () => {
       <footer className="py-12 px-6 lg:px-8 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-gray-400">
-            © 2024 Portfolio. Crafted with ❤️ using Next.js & React
+            © 2024 Portofolio. Dibuat dengan ❤️ menggunakan Next.js & React
           </p>
         </div>
       </footer>

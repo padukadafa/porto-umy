@@ -168,9 +168,9 @@ const ProjectDetailPage: React.FC = () => {
     objectives: dbProject.objectives || [],
     results: dbProject.results || [],
     testimonial: dbProject.testimonial ? {
-      text: dbProject.testimonial.text,
-      author: dbProject.testimonial.author,
-      role: dbProject.testimonial.role
+      text: dbProject.testimonial.text || '',
+      author: dbProject.testimonial.author || '',
+      role: dbProject.testimonial.role || ''
     } : undefined
   } : null;
 
@@ -200,7 +200,7 @@ const ProjectDetailPage: React.FC = () => {
       <main className="relative min-h-screen bg-gradient-to-br from-gray-50 to-white text-gray-900 mt-12 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading project...</p>
+          <p className="text-gray-600 text-lg">Memuat proyek...</p>
         </div>
       </main>
     );
@@ -212,8 +212,8 @@ const ProjectDetailPage: React.FC = () => {
       <main className="relative min-h-screen bg-gradient-to-br from-gray-50 to-white text-gray-900 mt-12 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Project Not Found</h1>
-          <p className="text-gray-600 mb-6">The project you're looking for doesn't exist or has been removed.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Proyek Tidak Ditemukan</h1>
+          <p className="text-gray-600 mb-6">Proyek yang Anda cari tidak ada atau telah dihapus.</p>
           <button 
             onClick={handleBack}
             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
@@ -231,13 +231,13 @@ const ProjectDetailPage: React.FC = () => {
       <main className="relative min-h-screen bg-gradient-to-br from-gray-50 to-white text-gray-900 mt-12 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🔍</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Project Not Found</h1>
-          <p className="text-gray-600 mb-6">The project you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Proyek Tidak Ditemukan</h1>
+          <p className="text-gray-600 mb-6">Proyek yang Anda cari tidak ada.</p>
           <button 
             onClick={handleBack}
             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
           >
-            Back to Portfolio
+            Kembali ke Portofolio
           </button>
         </div>
       </main>
@@ -262,7 +262,7 @@ const ProjectDetailPage: React.FC = () => {
               className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back to Portfolio</span>
+              <span>Kembali ke Portofolio</span>
             </button>
             <div className="flex space-x-4">
               {project.github && (
@@ -280,7 +280,7 @@ const ProjectDetailPage: React.FC = () => {
                   className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-all"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  <span>Live Demo</span>
+                  <span>Demo Langsung</span>
                 </button>
               )}
             </div>
@@ -314,12 +314,12 @@ const ProjectDetailPage: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
               <Clock className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Duration</p>
+              <p className="text-sm text-gray-600">Durasi</p>
               <p className="font-bold text-gray-900">{project.duration}</p>
             </div>
             <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
               <Users className="w-6 h-6 text-purple-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Team</p>
+              <p className="text-sm text-gray-600">Tim</p>
               <p className="font-bold text-gray-900">{project.team}</p>
             </div>
             <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
@@ -343,7 +343,7 @@ const ProjectDetailPage: React.FC = () => {
 
           {/* Technologies */}
           <div className="mb-8">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Technologies Used</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Teknologi yang Digunakan</h3>
             <div className="flex flex-wrap gap-3">
               {project.technologies.map((tech, index) => (
                 <span key={index} className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full font-medium text-sm border border-purple-200">
@@ -356,32 +356,32 @@ const ProjectDetailPage: React.FC = () => {
 
         {/* Image Gallery */}
         <div className={`transform transition-all duration-1000 delay-300 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} mb-12`}>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Gallery</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Galeri Proyek</h2>
           <ImageGallery images={project.images} title={project.title} />
         </div>
 
         {/* Project Details Grid */}
         <div className={`transform transition-all duration-1000 delay-500 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} grid lg:grid-cols-2 gap-8 mb-12`}>
           <InfoCard 
-            title="Key Features"
+            title="Fitur Utama"
             items={project.features}
             icon={<CheckCircle className="w-5 h-5" />}
             color="bg-gradient-to-r from-green-500 to-emerald-500"
           />
           <InfoCard 
-            title="Project Objectives"
+            title="Tujuan Proyek"
             items={project.objectives}
             icon={<Target className="w-5 h-5" />}
             color="bg-gradient-to-r from-blue-500 to-indigo-500"
           />
           <InfoCard 
-            title="Challenges Faced"
+            title="Tantangan yang Dihadapi"
             items={project.challenges}
             icon={<Lightbulb className="w-5 h-5" />}
             color="bg-gradient-to-r from-orange-500 to-red-500"
           />
           <InfoCard 
-            title="Solutions Implemented"
+            title="Solusi yang Diterapkan"
             items={project.solutions}
             icon={<Code className="w-5 h-5" />}
             color="bg-gradient-to-r from-purple-500 to-pink-500"
@@ -390,7 +390,7 @@ const ProjectDetailPage: React.FC = () => {
 
         {/* Results Section */}
         <div className={`transform transition-all duration-1000 delay-700 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} mb-12`}>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Project Results</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Hasil Proyek</h2>
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200">
             <div className="grid md:grid-cols-2 gap-6">
               {project.results.map((result, index) => (
@@ -408,7 +408,7 @@ const ProjectDetailPage: React.FC = () => {
         {/* Testimonial */}
         {project.testimonial && (
           <div className={`transform transition-all duration-1000 delay-900 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} mb-12`}>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Client Testimonial</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Testimoni Klien</h2>
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-200">
               <blockquote className="text-lg text-gray-700 italic mb-4">
                 "{project.testimonial.text}"
@@ -431,19 +431,19 @@ const ProjectDetailPage: React.FC = () => {
         {/* CTA Section */}
         <div className={`transform transition-all duration-1000 delay-1100 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'} text-center`}>
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">Interested in working together?</h3>
+            <h3 className="text-2xl font-bold mb-4">Tertarik untuk bekerja sama?</h3>
             <p className="text-purple-100 mb-6">
-              Let's discuss your next project and bring your ideas to life.
+              Mari diskusikan proyek berikutnya Anda dan wujudkan ide-ide Anda.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
               <button className="px-8 py-3 bg-white text-purple-600 rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300">
-                Get In Touch
+                Hubungi Saya
               </button>
               <button 
                 onClick={handleBack}
                 className="px-8 py-3 bg-white/20 backdrop-blur-sm text-white rounded-xl font-semibold border border-white/30 hover:bg-white/30 transition-all duration-300"
               >
-                View More Projects
+                Lihat Lebih Banyak Proyek
               </button>
             </div>
           </div>

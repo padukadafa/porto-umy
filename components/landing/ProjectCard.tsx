@@ -89,7 +89,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             <div className="p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg mb-3 inline-block">
               {project.icon}
             </div>
-            <p className="text-purple-600 font-medium">Project Preview</p>
+            <p className="text-purple-600 font-medium">Pratinjau Proyek</p>
           </div>
         </div>
       )}
@@ -134,8 +134,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
         {/* Project Metadata */}
         <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
-          <span>Team: {project.team}</span>
-          <span>{project.technologies.length} technologies</span>
+          <span>Tim: {project.team}</span>
+          <span>{project.technologies.length} teknologi</span>
         </div>
 
         {/* Technologies */}
@@ -148,7 +148,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             ))}
             {project.technologies.length > 4 && (
               <span className="px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded-full font-medium">
-                +{project.technologies.length - 4} more
+                +{project.technologies.length - 4} lagi
               </span>
             )}
           </div>
@@ -169,7 +169,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             onClick={handleViewDetails}
             className="flex items-center space-x-2 text-purple-600 hover:text-purple-800 font-medium group transition-colors"
           >
-            <span>View Details</span>
+            <span>Lihat Detail</span>
             <ArrowRight className={`w-4 h-4 transition-transform ${isHovered ? 'translate-x-1' : ''}`} />
           </button>
         </div>
