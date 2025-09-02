@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import {
@@ -58,154 +57,317 @@ const About = () => {
     { id: 'certificates', label: 'Sertifikat' }
   ];
 
-  if (error) return <div>Failed to load</div>;
-  if (isLoading) return <div>Loading...</div>;
-  if (!profile) return <div>No profile data</div>;
-
   return (
     <section id="about" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 via-white to-purple-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Profile Card */}
-        <div className={`transition-all duration-1000 ease-in-out transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div className="flex flex-col md:flex-row">
-              {/* Profile Image/Avatar */}
-              <div className="md:w-1/3 bg-gradient-to-br from-purple-600 to-blue-500 p-8 text-center">
-                {profile.avatar ? (
-                  <img
-                    src={profile.avatar}
-                    alt={profile.name}
-                    className="w-32 h-32 sm:w-40 sm:h-40 rounded-full mx-auto border-4 border-white shadow-lg object-cover"
-                  />
-                ) : (
-                  <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full mx-auto border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center text-3xl font-bold text-gray-600">
-                    {getInitials(profile.name)}
-                  </div>
-                )}
-                <h2 className="mt-4 text-xl sm:text-2xl font-bold text-white">{profile.name}</h2>
-                <p className="text-purple-200 text-sm sm:text-base">{profile.title}</p>
-                
-                <div className="mt-4 flex items-center justify-center text-purple-200 text-sm">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  <span>{profile.location}</span>
+        
+        {isLoading ? (
+          <div className="text-center py-12 sm:py-16 md:py-20">
+            <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 text-base sm:text-lg">Memuat profil...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 sm:py-16 md:py-20">
+            <div className="text-4xl sm:text-6xl mb-4">❌</div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Gagal memuat profil</h2>
+            <p className="text-gray-600">Silakan coba lagi nanti.</p>
+          </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div className={`text-center mb-8 sm:mb-12 md:mb-16 transition-all duration-1000 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}>
+              <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium mb-3 sm:mb-4 text-sm sm:text-base">
+                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>Tentang Saya</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-pink-800 bg-clip-text text-transparent mb-4 sm:mb-6">
+                {profile?.name ? `Kenali ${profile.name.split(' ')[0]} Lebih Baik` : 'Kenali Saya Lebih Baik'}
+              </h2>
+              <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                {profile?.description || profile?.bio || "I'm a passionate developer who loves creating digital experiences that make a difference."}
+              </p>
+            </div>
+
+            {/* Main Content */}
+        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-12 items-start">
+          
+          {/* Profile Card */}
+          <div className={`lg:col-span-1 transition-all duration-1000 delay-200 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-100 lg:sticky lg:top-8">
+              <div className="text-center mb-6 sm:mb-8">
+                <div className="w-32 h-32 mx-auto mb-6 relative">
+                  {profile?.avatar ? (
+                    <img 
+                      src={profile.avatar} 
+                      alt={profile.name} 
+                      className="w-full h-full rounded-full object-cover border-4 border-white shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white text-4xl font-bold">
+                      {profile ? getInitials(profile.name) : 'JD'}
+                    </div>
+                  )}
+                  <div className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full border-4 border-white ${
+                    profile?.availability === 'available' ? 'bg-green-500' : 'bg-gray-400'
+                  }`}></div>
                 </div>
-                
-                <div className="mt-2 flex items-center justify-center text-purple-200 text-sm">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  <span>{profile.experience}+ years experience</span>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">{profile?.name || 'John Developer'}</h3>
+                <p className="text-purple-600 font-medium mb-4">{profile?.title || 'Full Stack Developer'}</p>
+                <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
+                  {profile?.location && (
+                    <div className="flex items-center space-x-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{profile.location}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-1">
+                    <Calendar className="w-4 h-4" />
+                    <span className="capitalize">{profile?.availability || 'Available'}</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Stats & Content */}
-              <div className="md:w-2/3 p-8">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                  {stats.map((stat, index) => (
-                    <div key={index} className="text-center">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 text-purple-600 mb-3">
-                        {stat.icon}
-                      </div>
-                      <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                      <div className="text-sm text-gray-500">{stat.label}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Tabs */}
-                <div className="border-b border-gray-200 mb-6">
-                  <nav className="flex space-x-4" aria-label="Tabs">
-                    {tabs.map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`${
-                          activeTab === tab.id
-                            ? 'border-purple-500 text-purple-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </nav>
-                </div>
-
-                {/* Tab Content */}
-                <div className="prose prose-purple max-w-none">
-                  {activeTab === 'overview' && (
-                    <div>
-                      <p className="text-gray-600">{profile.bio}</p>
-                      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        {interests.map((interest, index) => (
-                          <div key={index} className="flex space-x-3">
-                            <div className="flex-shrink-0">
-                              <div className="flex items-center justify-center w-8 h-8 rounded-md bg-purple-100 text-purple-600">
-                                {interest.icon}
-                              </div>
-                            </div>
-                            <div>
-                              <h3 className="text-lg font-medium text-gray-900">{interest.title}</h3>
-                              <p className="mt-1 text-sm text-gray-500">{interest.desc}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'education' && (
-                    <div className="space-y-6">
-                      {profile.education.map((edu: any, index: number) => (
-                        <div key={index} className="flex flex-col sm:flex-row sm:items-start">
-                          <div className="flex-shrink-0 w-full sm:w-32 font-medium text-purple-600">
-                            {edu.year}
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-medium text-gray-900">{edu.degree}</h3>
-                            <p className="mt-1 text-gray-500">{edu.school}</p>
-                            {edu.description && (
-                              <p className="mt-2 text-sm text-gray-500">{edu.description}</p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {activeTab === 'skills' && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                      {profile.skills.map((skill: string, index: number) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <Code2 className="w-4 h-4 text-purple-600" />
-                          <span>{skill}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {activeTab === 'certificates' && (
-                    <div className="space-y-6">
-                      {profile.certificates.map((cert: any, index: number) => (
-                        <div key={index} className="flex flex-col sm:flex-row sm:items-start">
-                          <div className="flex-shrink-0 w-full sm:w-32 font-medium text-purple-600">
-                            {cert.year}
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-medium text-gray-900">{cert.name}</h3>
-                            <p className="mt-1 text-gray-500">{cert.issuer}</p>
-                            {cert.description && (
-                              <p className="mt-2 text-sm text-gray-500">{cert.description}</p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 gap-4">
+                {stats.map((stat, index) => (
+                  <div key={index} className="text-center p-4 bg-gray-50 rounded-xl">
+                    <div className="text-purple-600 mb-2 flex justify-center">{stat.icon}</div>
+                    <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                    <div className="text-xs text-gray-600">{stat.label}</div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+
+          {/* Content Area */}
+          <div className={`lg:col-span-2 transition-all duration-1000 delay-400 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            
+            {/* Tab Navigation */}
+            <div className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-1 mb-6 sm:mb-8 bg-gray-100 p-1 rounded-xl">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 min-w-[120px] px-4 sm:px-6 py-3 rounded-lg font-medium transition-all duration-300 text-sm sm:text-base ${
+                    activeTab === tab.id
+                      ? 'bg-white text-purple-600 shadow-md'
+                      : 'text-gray-600 hover:text-purple-600'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Tab Content */}
+            <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 min-h-[500px]">
+              
+              {/* Overview Tab */}
+              {activeTab === 'overview' && (
+                <div className="space-y-6 sm:space-y-8">
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
+                      Halo! Saya {profile?.name?.split(' ')[0] || 'seorang Developer'}
+                      {profile?.title && `, ${profile.title}`}
+                    </h3>
+                    <div className="space-y-3 sm:space-y-4 text-gray-600 leading-relaxed text-sm sm:text-base">
+                      <p>
+                        {profile?.bio || "I'm a passionate full-stack developer with over 3 years of experience creating digital solutions that combine beautiful design with powerful functionality. My journey in tech started with curiosity and has evolved into a deep love for crafting exceptional user experiences."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Interests */}
+                  <div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-4 sm:mb-6">Yang Saya Sukai Lakukan</h4>
+                    <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                      {interests.map((interest, index) => (
+                        <div key={index} className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-50 rounded-xl hover:bg-purple-50 transition-colors group">
+                          <div className="text-purple-600 group-hover:text-purple-700 mt-1">
+                            {interest.icon}
+                          </div>
+                          <div>
+                            <h5 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">{interest.title}</h5>
+                            <p className="text-xs sm:text-sm text-gray-600">{interest.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Education Tab */}
+              {activeTab === 'education' && (
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-8">Latar Belakang Pendidikan Saya</h3>
+                  <div className="space-y-8">
+                    {profile?.education && profile.education.length > 0 ? profile.education.map((item: any, index: number) => (
+                      <div key={index} className="flex items-start space-x-4 sm:space-x-6">
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r ${[
+                          'from-blue-500 to-cyan-500',
+                          'from-purple-500 to-pink-500',
+                          'from-orange-500 to-red-500',
+                          'from-green-500 to-teal-500'
+                        ][index % 4]} flex items-center justify-center text-white font-bold flex-shrink-0 text-sm sm:text-base`}>
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
+                            <h4 className="text-lg sm:text-xl font-bold text-gray-900">{item.degree}</h4>
+                            <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 sm:px-3 py-1 rounded-full w-fit mt-1 sm:mt-0">
+                              {item.year}
+                            </span>
+                          </div>
+                          <p className="text-purple-600 font-medium mb-2 text-sm sm:text-base">{item.institution}</p>
+                          <p className="text-gray-600 text-xs sm:text-sm">{item.description}</p>
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>Informasi pendidikan tidak tersedia</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Skills Tab */}
+              {activeTab === 'skills' && (
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-8">Keahlian Teknis</h3>
+                  <div className="space-y-6">
+                    {profile?.skills && profile.skills.length > 0 ? profile.skills.map((skill: string, index: number) => (
+                      <div key={index} className="p-6 bg-gray-50 rounded-2xl hover:bg-purple-50 transition-colors group">
+                        <div className="flex items-start space-x-4">
+                          <div className="text-purple-600 group-hover:text-purple-700">
+                            <Code2 className="w-6 h-6" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-xl font-bold text-gray-900">{skill}</h4>
+                            <p className="text-gray-600">Mahir dalam {skill}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>Informasi keahlian tidak tersedia</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-8 p-6 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl text-white">
+                    <h4 className="text-xl font-bold mb-3">Selalu Belajar</h4>
+                    <p className="leading-relaxed">
+                      Technology evolves rapidly, and I'm committed to continuous learning. Currently exploring 
+                      {profile?.skills?.includes('AI') || profile?.skills?.includes('Machine Learning') ? ' AI/ML integration,' : ''}
+                      {profile?.skills?.includes('Web3') || profile?.skills?.includes('Blockchain') ? ' Web3 technologies,' : ''}
+                      {profile?.skills?.includes('Cloud') || profile?.skills?.includes('AWS') ? ' advanced cloud architectures,' : ''}
+                      and staying at the forefront of development trends.
+                      {profile?.languages?.length ? ` I speak ${profile.languages.join(', ')}.` : ''}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Certificates Tab */}
+              {activeTab === 'certificates' && (
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-8">Sertifikat & Penghargaan</h3>
+                  <div className="space-y-6">
+                    {profile?.certificates && profile.certificates.length > 0 ? profile.certificates.map((cert: any, index: number) => (
+                      <div key={index} className="p-4 sm:p-6 bg-gray-50 rounded-2xl hover:bg-purple-50 transition-colors group">
+                        <div className="flex items-start space-x-3 sm:space-x-4">
+                          <div className="text-purple-600 group-hover:text-purple-700">
+                            <Award className="w-5 h-5 sm:w-6 sm:h-6" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                              <h4 className="text-lg sm:text-xl font-bold text-gray-900">{cert.title}</h4>
+                              <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 sm:px-3 py-1 rounded-full w-fit mt-1 sm:mt-0">
+                                {cert.year}
+                              </span>
+                            </div>
+                            <p className="text-purple-600 font-medium mb-2 text-sm sm:text-base">{cert.issuer}</p>
+                            {cert.description && (
+                              <p className="text-gray-600 text-xs sm:text-sm">{cert.description}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <div className="text-6xl mb-4">🏆</div>
+                        <h4 className="text-xl font-bold text-gray-900 mb-2">Belum Ada Sertifikat</h4>
+                        <p>Sertifikat dan penghargaan akan ditampilkan di sini setelah ditambahkan di pengaturan.</p>
+                      </div>
+                    )}
+                  </div>
+                  {profile?.certificates && profile.certificates.length > 0 && (
+                    <div className="mt-8 p-6 bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl text-white">
+                      <h4 className="text-xl font-bold mb-3">Komitmen Terhadap Kualitas</h4>
+                      <p className="leading-relaxed">
+                        Sertifikat dan penghargaan ini mencerminkan komitmen saya terhadap pengembangan profesional dan
+                        dedikasi untuk memberikan hasil terbaik dalam setiap proyek yang saya kerjakan.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* Call to Action */}
+        <div className={`text-center mt-8 sm:mt-16 transition-all duration-1000 delay-600 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}>
+          <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-100 max-w-2xl mx-auto">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Mari Bekerja Sama</h3>
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
+              I'm {profile?.availability === 'available' ? 'currently available' : profile?.availability === 'open' ? 'open to opportunities' : 'always interested in'} discussing new opportunities and interesting projects. 
+              Let's create something amazing together!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              {profile?.email && (
+                <a 
+                  href={`mailto:${profile.email}`} 
+                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
+                >
+                  Hubungi Saya
+                </a>
+              )}
+              {profile?.website && (
+                <a 
+                  href={profile.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-8 py-3 border-2 border-purple-600 text-purple-600 rounded-xl font-medium hover:bg-purple-50 transition-colors"
+                >
+                  Lihat Karya Saya
+                </a>
+              )}
+              {!profile?.email && !profile?.website && (
+                <>
+                  <button className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-sm sm:text-base font-medium hover:shadow-lg hover:scale-105 transition-all duration-300">
+                    Hubungi Saya
+                  </button>
+                  <button className="px-6 sm:px-8 py-2.5 sm:py-3 border-2 border-purple-600 text-purple-600 rounded-xl text-sm sm:text-base font-medium hover:bg-purple-50 transition-colors">
+                    Lihat Karya Saya
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </>
+    )}
       </div>
     </section>
   );
