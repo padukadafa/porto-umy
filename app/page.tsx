@@ -375,7 +375,7 @@ const ModernPortfolio: React.FC = () => {
               <div className="mb-6 animate-on-scroll">
                 <h1 className="text-5xl lg:text-7xl font-bold">
                   <span className="bg-gradient-to-r from-gray-900 via-purple-800 to-pink-800 bg-clip-text text-transparent animate-gradient-x">
-                    {profile?.name?.split(' ')[0] || 'John'}
+                    {profile?.name?.split(' ')[0] || 'Umy'}
                   </span>
                   <br />
                   <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient-x" style={{animationDelay: '0.5s'}}>
@@ -621,7 +621,7 @@ const ModernPortfolio: React.FC = () => {
       <footer className="py-12 px-6 lg:px-8 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-gray-400">
-            © {new Date().getFullYear()} {profile?.name || 'John Developer'} Portfolio. Dibuat dengan ❤️ menggunakan Spline, React & Next.js
+            © {new Date().getFullYear()} {profile?.name || 'Umy Developer'} Portfolio. Dibuat dengan ❤️ menggunakan Spline, React & Next.js
           </p>
         </div>
       </footer>

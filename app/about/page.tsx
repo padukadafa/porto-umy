@@ -75,7 +75,7 @@ const About = () => {
                   <img
                     src={profile.avatar}
                     alt={profile.name}
-                    className="w-32 h-32 sm:w-40 sm:h-40 rounded-full mx-auto border-4 border-white shadow-lg"
+                    className="w-32 h-32 sm:w-40 sm:h-40 rounded-full mx-auto border-4 border-white shadow-lg object-cover"
                   />
                 ) : (
                   <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full mx-auto border-4 border-white shadow-lg bg-gray-200 flex items-center justify-center text-3xl font-bold text-gray-600">
