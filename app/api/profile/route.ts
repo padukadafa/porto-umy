@@ -19,7 +19,8 @@ export async function GET() {
           website: null,
           resume: null,
           skills: [],
-          education: undefined
+          education: undefined,
+          certificates: undefined
         }
       });
     }
@@ -58,6 +59,7 @@ export async function PUT(req: Request) {
           github: data.github || null,
           skills: data.skills || [],
           education: data.education || undefined,
+          certificates: data.certificates || undefined,
           languages: data.languages || [],
           experience: data.experience || null,
           availability: data.availability || 'available'
@@ -81,6 +83,7 @@ export async function PUT(req: Request) {
           github: data.github || null,
           skills: data.skills || [],
           education: data.education || undefined,
+          certificates: data.certificates || undefined,
           languages: data.languages || [],
           experience: data.experience || null,
           availability: data.availability || 'available'

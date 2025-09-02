@@ -20,9 +20,9 @@ export interface Profile {
     description: string;
   }>;
   certificates: Array<{
-    name: string;
+    title: string;
     issuer: string;
-    date: string;
+    year: string;
     description: string;
     url?: string;
   }>;

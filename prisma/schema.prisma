@@ -52,6 +52,7 @@ model Profile {
   github      String?
   skills      String[] // Array of skill names
   education   Json?    // Array of education objects stored as JSON
+  certificates Json?   // Array of certificate objects stored as JSON
   languages   String[] // Array of language names
   experience  String?
   availability String? @default("available")

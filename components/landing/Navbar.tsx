@@ -1,22 +1,25 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import {
-    Menu,
-    X,
-    Home,
-    User,
-    Briefcase,
-    Code,
-    Mail,
-    Github,
-    Linkedin,
-    Download,
-    Settings,
-    LogIn
+  Menu,
+  X,
+  Home,
+  User,
+  Briefcase,
+  Code,
+  Mail,
+  Github,
+  Linkedin,
+  Download,
+  Settings,
+  LogIn
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import useSWR from 'swr';
+import { Profile } from '@/types/profile';
+import { fetcher } from '@/lib/fetcher';
 
 interface NavbarProps {
   activeSection?: string;
@@ -31,6 +34,8 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
+
+  const { data: profile, error: profileError } = useSWR<Profile>('/api/profile', fetcher);
 
   // Navigation items with route mapping
   const navItems = [
@@ -104,19 +109,22 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
 
   // Handle social media links
   const handleSocialClick = (type: 'github' | 'linkedin') => {
+    if (!profile) return;
     const urls = {
-      github: 'https://github.com/your-username',
-      linkedin: 'https://linkedin.com/in/your-profile'
+      github: profile.github,
+      linkedin: profile.linkedin
     };
-    window.open(urls[type], '_blank');
+    if (urls[type]) {
+      window.open(urls[type], '_blank');
+    }
   };
 
   // Handle CV download
   const handleDownloadCV = () => {
-    // Replace with your actual CV file path
+    if (!profile?.resume) return;
     const link = document.createElement('a');
-    link.href = '/path-to-your-cv.pdf';
-    link.download = 'John_Developer_CV.pdf';
+    link.href = profile.resume;
+    link.download = `${profile.name.replace(' ', '_')}_CV.pdf`;
     link.click();
   };
 
@@ -136,11 +144,11 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection = 'hero', onSectionChange
             {/* Logo */}
             <Link href={"/"} className='cursor-pointer'><div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">J</span>
+                <span className="text-white font-bold text-lg">{profile?.name?.charAt(0) ?? 'U'}</span>
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-pink-800 bg-clip-text text-transparent">
-                  John Developer
+                  {profile?.name ?? 'Loading...'}
                 </h1>
               </div>
             </div></Link>
