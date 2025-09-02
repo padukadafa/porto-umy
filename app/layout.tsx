@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio Dashboard",
-  description: "Professional portfolio with dashboard management",
+  title: "Umy Afifah | Portofolio",
+  description: "Professional portfolio",
 };
 
 export default function RootLayout({
