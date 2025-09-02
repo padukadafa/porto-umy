@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Sparkles, Zap, Heart, Star, MousePointer } from 'lucide-react';
+import { ChevronDown, Sparkles, Zap, Heart, Star, MousePointer, Plus } from 'lucide-react';
 import { SplineScene } from '@/components/SplineScene';
 import SkillSection from '@/components/landing/SkillSection';
 import ContactSection from '@/components/landing/ContactSection';
@@ -114,8 +114,10 @@ const ModernPortfolio: React.FC = () => {
     };
   };
 
-  // Get published projects only
-  const allProjects = apiProjects ? apiProjects.filter((p: any) => p.published).map(transformProject) : [];
+  // Get published projects only, ensure apiProjects is an array
+  const allProjects = Array.isArray(apiProjects)
+    ? apiProjects.filter((p: any) => p.published).map(transformProject)
+    : [];
 
   useEffect(() => {
     setIsLoaded(true);
@@ -546,50 +548,67 @@ const ModernPortfolio: React.FC = () => {
           ))}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 relative z-10">
-          {allProjects.map((project: Project, index: number) => (
-            <div
-              key={project.id}
-              className="group transform transition-all duration-500 hover:scale-105 hover:-translate-y-2 animate-on-scroll"
-              style={{
-                animationDelay: `${index * 200}ms`,
-                animation: 'fadeInUp 0.8s ease-out forwards'
-              }}
-            >
-              <ProjectCard project={project} index={index} />
-              
-              {/* Hover particle effects */}
-              <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                {[...Array(6)].map((_, i) => (
-                  <div
-                    key={`project-particle-${index}-${i}`}
-                    className="absolute w-1 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-ping"
-                    style={{
-                      left: `${20 + i * 15}%`,
-                      top: `${30 + (i % 2) * 40}%`,
-                      animationDelay: `${i * 0.1}s`,
-                      animationDuration: '1s'
-                    }}
-                  ></div>
-                ))}
+        {allProjects.length > 0 ? (
+          <div className="grid md:grid-cols-2 gap-8 relative z-10">
+            {allProjects.map((project: Project, index: number) => (
+              <div
+                key={project.id}
+                className="group transform transition-all duration-500 hover:scale-105 hover:-translate-y-2 animate-on-scroll"
+                style={{
+                  animationDelay: `${index * 200}ms`,
+                  animation: 'fadeInUp 0.8s ease-out forwards'
+                }}
+              >
+                <ProjectCard project={project} index={index} />
+                
+                {/* Hover particle effects */}
+                <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  {[...Array(6)].map((_, i) => (
+                    <div
+                      key={`project-particle-${index}-${i}`}
+                      className="absolute w-1 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-ping"
+                      style={{
+                        left: `${20 + i * 15}%`,
+                        top: `${30 + (i % 2) * 40}%`,
+                        animationDelay: `${i * 0.1}s`,
+                        animationDuration: '1s'
+                      }}
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : !error ? (
+          <div className="text-center py-20 relative z-10">
+            <div className="mb-6">
+              <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto flex items-center justify-center">
+                <Sparkles className="w-12 h-12 text-white animate-pulse" />
               </div>
             </div>
-          ))}
-        </div>
-
-        {allProjects.length === 0 && !error && (
-          <div className="text-center py-12 relative z-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 animate-pulse">Memuat proyek...</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              Belum Ada Proyek
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto mb-8">
+              Proyek-proyek akan ditampilkan di sini setelah ditambahkan. Silakan kembali lagi nanti untuk melihat karya-karya terbaru.
+            </p>
+            {isAuthenticated && (
+              <Link href="/dashboard/projects/add">
+                <button className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                  <span className="flex items-center gap-2">
+                    <Plus className="w-5 h-5" />
+                    Tambah Proyek Baru
+                  </span>
+                </button>
+              </Link>
+            )}
           </div>
-        )}
-
-        {error && (
+        ) : (
           <div className="text-center py-12 relative z-10">
             <div className="text-red-500 mb-4">
               <Zap className="w-12 h-12 mx-auto animate-bounce" />
             </div>
-            <p className="text-red-600 animate-pulse">Gagal memuat proyek. Silakan coba lagi nanti.</p>
+            <p className="text-red-600">Gagal memuat proyek. Silakan coba lagi nanti.</p>
           </div>
         )}
       </Section>
