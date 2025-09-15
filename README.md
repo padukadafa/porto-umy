@@ -4,7 +4,7 @@ Portfolio website yang dikembangkan dengan Next.js 15, React 19, dan teknologi w
 
 ## ✨ Demo Live
 
-🔗 **[Lihat Portfolio Live](http://localhost:3000)**
+🔗 **[Lihat Portfolio Live](https://www.umyafifah.com/)**
 
 > Jalankan proyek secara lokal untuk melihat semua fitur interaktif
 
