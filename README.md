@@ -8,7 +8,37 @@ Portfolio website yang dikembangkan dengan Next.js 15, React 19, dan teknologi w
 
 > Jalankan proyek secara lokal untuk melihat semua fitur interaktif
 
-## 🚀 Fitur Utama
+## � Preview Screenshots
+
+### 🏠 Homepage dengan 3D Scene
+
+<div align="center">
+  <img src="./screenshots/screenshot_1.png" alt="Homepage Portfolio - 3D Interactive Scene" width="800"/>
+  <p><em>Homepage dengan Spline 3D scene interaktif, animasi partikel, dan design modern</em></p>
+</div>
+
+<!-- Uncomment ketika screenshot lain tersedia -->
+<!--
+### 📱 Mobile Responsive View
+<div align="center">
+  <img src="./screenshots/mobile-view.png" alt="Mobile Responsive Design" width="300"/>
+  <p><em>Design responsive yang optimal untuk semua device</em></p>
+</div>
+
+### ⚡ Dashboard Management
+<div align="center">
+  <img src="./screenshots/dashboard.png" alt="Admin Dashboard" width="800"/>
+  <p><em>Dashboard admin untuk mengelola projects dan profile</em></p>
+</div>
+
+### 🎯 Project Detail Page
+<div align="center">
+  <img src="./screenshots/project-detail.png" alt="Project Detail Page" width="800"/>
+  <p><em>Halaman detail project dengan gallery dan informasi lengkap</em></p>
+</div>
+-->
+
+## �🚀 Fitur Utama
 
 ### 🎨 **Desain Modern & Interaktif**
 
@@ -81,7 +111,7 @@ Portfolio website yang dikembangkan dengan Next.js 15, React 19, dan teknologi w
 ## 📁 Struktur Proyek
 
 ```
-porto-umy-1/
+porto-umy/
 ├── 📁 app/                          # Next.js App Router
 │   ├── 📄 layout.tsx               # Root layout
 │   ├── 📄 page.tsx                 # Homepage dengan 3D scene
